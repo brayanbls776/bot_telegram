@@ -29,17 +29,19 @@ def home():
 @app.post("/yape")
 async def recibir_yape(request: Request):
     try:
+        # Esto lee el contenido sin importar si es JSON perfecto o no
+        body = await request.body()
+        print(f"Contenido bruto recibido: {body.decode()}")
+        
         data = await request.json()
-        print(f"Datos recibidos: {data}") # Esto te permite ver en los logs de Render qué está llegando
+        notificacion = data.get("texto", "No se pudo leer el texto")
         
-        # Intentamos obtener el texto de diferentes formas según la app que uses
-        notificacion = data.get("texto") or data.get("text") or data.get("body") or "Mensaje sin contenido"
-        
-        # Enviar a Telegram
-        enviar_telegram(f"🔔 NUEVA NOTIFICACIÓN YAPE:\n{notificacion}")
+        enviar_telegram(f"🔔 NUEVA NOTIFICACIÓN:\n{notificacion}")
         
     except Exception as e:
-        print(f"Error procesando datos: {e}")
-        
-    return {"status": "recibido jajaja"}
+        # Si no es JSON, intentamos enviarlo como texto simple
+        cuerpo_simple = await request.body()
+        enviar_telegram(f"🔔 NOTIFICACIÓN (Texto plano):\n{cuerpo_simple.decode()}")
+        print(f"Error procesando JSON, enviado como texto: {e}")
 
+    return {"status": "recibido"}
