@@ -12,7 +12,7 @@ CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
 def enviar_telegram(mensaje):
     # LA LÍNEA DE ABAJO ES LA QUE ESTABA MAL EN TU CÓDIGO
-    url = f"https://api.telegram.org{TOKEN}/sendMessage"
+    url = f"https://api.telegram.org/{TOKEN}/sendMessage"
     
     payload = {"chat_id": CHAT_ID, "text": mensaje}
     try:
