@@ -28,13 +28,18 @@ def home():
 
 @app.post("/yape")
 async def recibir_yape(request: Request):
-    data = await request.json()
-    # El celular enviará el texto de la notificación
-    notificacion = data.get("texto", "")
-    
-    print(f"Recibido: {notificacion}")
-    
-    # Reenviar a tu Telegram de inmediato
-    enviar_telegram(f"🔔 NUEVA NOTIFICACIÓN:\n{notificacion}")
-    
-    return {"status": "recibido"}
+    try:
+        data = await request.json()
+        print(f"Datos recibidos: {data}") # Esto te permite ver en los logs de Render qué está llegando
+        
+        # Intentamos obtener el texto de diferentes formas según la app que uses
+        notificacion = data.get("texto") or data.get("text") or data.get("body") or "Mensaje sin contenido"
+        
+        # Enviar a Telegram
+        enviar_telegram(f"🔔 NUEVA NOTIFICACIÓN YAPE:\n{notificacion}")
+        
+    except Exception as e:
+        print(f"Error procesando datos: {e}")
+        
+    return {"status": "recibido jajaja"}
+
